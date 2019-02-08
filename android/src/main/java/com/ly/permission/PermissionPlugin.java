@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.util.Log;
 import android.provider.Settings;
 
 import androidx.core.app.ActivityCompat;
@@ -37,6 +38,7 @@ public class PermissionPlugin implements MethodCallHandler, PluginRegistry.Reque
 
     @Override
     public void onMethodCall(MethodCall call, Result result) {
+        Log.w("ABCXYZ","onMethodCall");
         List<String> permissions = new ArrayList<>();
         switch (call.method) {
             case "getPermissionsStatus":
@@ -44,6 +46,7 @@ public class PermissionPlugin implements MethodCallHandler, PluginRegistry.Reque
                 result.success(get(permissions));
                 break;
             case "requestPermissions":
+            
                 permissions = call.argument("permissions");
                 this.result = result;
                 requests(permissions);
@@ -63,7 +66,7 @@ public class PermissionPlugin implements MethodCallHandler, PluginRegistry.Reque
         Activity activity = registrar.activity();
         for (String permission : permissions) {
             permission = getManifestPermission(permission);
-            if (ContextCompat.checkSelfPermission(registrar.activity(), permission) == PackageManager.PERMISSION_DENIED) {
+             if (ContextCompat.checkSelfPermission(registrar.activity(), permission) == PackageManager.PERMISSION_DENIED) {
                 if (!ActivityCompat.shouldShowRequestPermissionRationale(activity, permission)) {
                     intList.add(3);
                 } else {
@@ -77,12 +80,19 @@ public class PermissionPlugin implements MethodCallHandler, PluginRegistry.Reque
     }
 
     private void requests(List<String> permissionList) {
+        Log.w("ABCXYZ","requests");
+      
         Activity activity = registrar.activity();
         String[] permissions = new String[permissionList.size()];
         for (int i = 0; i < permissionList.size(); i++) {
+            Log.w("ABCXYZ","requests permissionList.get(i)) "+permissionList.get(i));
+      
             permissions[i] = getManifestPermission(permissionList.get(i));
+            Log.w("ABCXYZ","requests permissions[i]) "+permissions[i]);
+      
         }
-        ActivityCompat.requestPermissions(activity, permissions, 0);
+        
+        ActivityCompat.requestPermissions(activity, permissions, 777);
     }
 
     private void openSettings() {
@@ -132,16 +142,24 @@ public class PermissionPlugin implements MethodCallHandler, PluginRegistry.Reque
 
     @Override
     public boolean onRequestPermissionsResult(int requestCode, String[] strings, int[] ints) {
-        if (requestCode == 0 && ints.length > 0) {
+        if (requestCode == 777 && ints.length > 0) {
+            Log.w("ABCXYZ","onRequestPermissionsResult "+ints);
+      
             List<Integer> intList = new ArrayList<>();
             for (int i = 0; i < ints.length; i++) {
                 if (ints[i] == PackageManager.PERMISSION_DENIED) {
+                    
+                    Log.w("ABCXYZ","ints[i]= PackageManager.PERMISSION_DENIED " +ints[i] );
+                    Log.w("ABCXYZ","strings[i] = "+strings[i]);
                     if (!ActivityCompat.shouldShowRequestPermissionRationale(registrar.activity(), strings[i])) {
+                        Log.w("ABCXYZ","!shouldShowRequestPermissionRationale");
                         intList.add(3);
                     } else {
+                        Log.w("ABCXYZ","shouldShowRequestPermissionRationale");
                         intList.add(1);
                     }
                 } else {
+                    Log.w("ABCXYZ","ints[i]=  other ");
                     intList.add(0);
                 }
             }

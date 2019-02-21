@@ -16,6 +16,7 @@ class Permission {
       PermissionStatus permissionStatus;
       switch (status[i]) {
         case 0:
+        case 5:
           permissionStatus = PermissionStatus.allow;
           break;
         case 1:
@@ -27,6 +28,10 @@ class Permission {
         case 3:
           permissionStatus = PermissionStatus.notAgain;
           break;
+        case 4:
+          permissionStatus = PermissionStatus.whenInUse;
+          break;
+
         default:
           permissionStatus = PermissionStatus.notDecided;
           break;
